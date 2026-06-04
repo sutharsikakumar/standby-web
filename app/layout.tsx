@@ -10,11 +10,11 @@ const openSans = Open_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Standby — Start chasing serendipity.",
+  title: "Standby",
   description:
     "Airports are the world's greatest hub of talent. Standby builds the infrastructure for the right introduction at the right moment.",
   openGraph: {
-    title: "Standby — Start chasing serendipity.",
+    title: "Standby",
     description:
       "Airports are the world's greatest hub of talent. Standby builds the infrastructure for the right introduction at the right moment.",
     type: "website",
