@@ -1,21 +1,22 @@
 import type { Metadata } from "next";
-import { Sora } from "next/font/google";
+import { Open_Sans } from "next/font/google";
 import "./globals.css";
 
-const sora = Sora({
+const openSans = Open_Sans({
   subsets: ["latin"],
   display: "swap",
-  variable: "--font-sora",
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-open-sans",
 });
 
 export const metadata: Metadata = {
-  title: "Standby — Meet someone before boarding.",
+  title: "Standby — Start chasing serendipity.",
   description:
-    "Standby turns airport downtime into one curated introduction with someone nearby before the moment disappears.",
+    "Airports are the world's greatest hub of talent. Standby builds the infrastructure for the right introduction at the right moment.",
   openGraph: {
-    title: "Standby — Meet someone before boarding.",
+    title: "Standby — Start chasing serendipity.",
     description:
-      "Standby turns airport downtime into one curated introduction with someone nearby before the moment disappears.",
+      "Airports are the world's greatest hub of talent. Standby builds the infrastructure for the right introduction at the right moment.",
     type: "website",
   },
 };
@@ -26,7 +27,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={sora.variable}>
+    <html lang="en" className={openSans.variable}>
       <body>{children}</body>
     </html>
   );

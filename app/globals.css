@@ -1,24 +1,32 @@
 @import "tailwindcss";
 
 /*
-  Standby design tokens.
-  Restrained black / near-white / TWA Hotel red system.
-  Red is an accent only — used for a dot, an underline, a status mark.
+  Standby — airport-coded, editorial, minimal.
+  Split-flap departure board energy on pure bone-white paper.
 */
 @theme {
-  --color-paper: #fafaf9;
-  --color-ink: #0a0a0a;
-  --color-ink-soft: #525252;
-  --color-line: #e7e5e4;
-  --color-accent: #e4002b;
+  --color-brick-red: #b02724;
+  --color-bone: #d7d2c6;
+  --color-camel: #a68f70;
+  --color-white: #fdfdfd;
+  --color-pitch-black: #13140a;
 
-  --font-sans: var(--font-sora), ui-sans-serif, system-ui, sans-serif;
-
-  --tracking-label: 0.22em;
+  --font-sans: var(--font-open-sans), ui-sans-serif, system-ui, sans-serif;
 }
 
 :root {
   color-scheme: light;
+
+  --brick-red: #b02724;
+  --bone: #d7d2c6;
+  --camel: #a68f70;
+  --white: #fdfdfd;
+  --pitch-black: #13140a;
+}
+
+html,
+body {
+  height: 100%;
 }
 
 html {
@@ -28,18 +36,598 @@ html {
 }
 
 body {
-  background-color: var(--color-paper);
-  color: var(--color-ink);
+  background-color: var(--white);
+  color: var(--pitch-black);
   font-family: var(--font-sans);
+  overflow-x: hidden;
 }
 
 ::selection {
-  background-color: var(--color-accent);
-  color: #ffffff;
+  background-color: var(--pitch-black);
+  color: var(--white);
 }
 
-/* Subtle focus ring tuned to the accent, never garish. */
 *:focus-visible {
-  outline: 2px solid var(--color-accent);
-  outline-offset: 2px;
+  outline: 2px solid var(--pitch-black);
+  outline-offset: 3px;
+}
+
+/* ============================================================
+   SPLIT-FLAP LOGO
+   ============================================================ */
+
+.flap-board {
+  /* resting (settled) tile sizing — the entrance scales these up */
+  --tile-w: 56px;
+  --tile-h: 70px;
+  --tile-font: 44px;
+  --flap-gap: 7px;
+  display: flex;
+  gap: var(--flap-gap, 7px);
+  perspective: 700px;
+  /* logoSettle: letters flip through at full size centred, then the whole
+     group drifts up + scales down to its resting place near the top. */
+  animation: logoSettle 2.2s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+  transform-origin: top center;
+  will-change: transform;
+}
+
+/* a single split-flap tile — two static halves with two flipping flaps,
+   exactly like an old-school Solari departure board. */
+.flap-tile {
+  position: relative;
+  width: var(--tile-w, 56px);
+  height: var(--tile-h, 70px);
+  border-radius: 0; /* sharp tiles */
+  background-color: var(--pitch-black);
+  color: var(--white);
+  font-size: var(--tile-font, 44px);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  perspective: 320px;
+  box-shadow:
+    0 1px 0 rgba(253, 253, 253, 0.05) inset,
+    0 8px 18px -10px rgba(19, 20, 10, 0.45);
+}
+
+/* the half panels (static + flipping) all share this glyph framing */
+.flap-half,
+.flap-leaf {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 50%;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  background-color: var(--pitch-black);
+  backface-visibility: hidden;
+}
+
+/* the inner glyph box is full tile-height so each half clips it cleanly */
+.flap-glyph {
+  height: var(--tile-h, 70px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.flap-half.top,
+.flap-leaf.top {
+  top: 0;
+  align-items: flex-start;
+}
+
+.flap-half.bottom,
+.flap-leaf.bottom {
+  bottom: 0;
+  align-items: flex-end;
+}
+
+/* split seam through the middle */
+.flap-half.top::after,
+.flap-leaf.top::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: rgba(19, 20, 10, 0.9);
+  box-shadow: 0 -1px 0 rgba(253, 253, 253, 0.08);
+}
+
+/* the flipping leaves sit above the static halves */
+.flap-leaf {
+  z-index: 2;
+}
+
+.flap-leaf.top {
+  transform-origin: bottom center;
+  animation: leafDown 110ms ease-in both;
+}
+
+.flap-leaf.bottom {
+  transform-origin: top center;
+  animation: leafUp 110ms ease-out 110ms both;
+}
+
+@keyframes leafDown {
+  0% { transform: rotateX(0deg); }
+  100% { transform: rotateX(-90deg); }
+}
+
+@keyframes leafUp {
+  0% { transform: rotateX(90deg); }
+  100% { transform: rotateX(0deg); }
+}
+
+@keyframes logoSettle {
+  0% {
+    transform: translateY(30vh) scale(1.55);
+  }
+  /* hold large + centred while the letters flip through (~0 - 1.5s) */
+  70% {
+    transform: translateY(30vh) scale(1.55);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ============================================================
+   FADE-IN (body copy, CTA, boarding pass)
+   ============================================================ */
+
+.fade-in {
+  opacity: 0;
+  animation: fadeUp 0.9s ease both;
+}
+
+@keyframes fadeUp {
+  0% {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================================
+   CTA
+   ============================================================ */
+
+.cta-link {
+  font-weight: 700;
+  text-transform: lowercase;
+  color: var(--pitch-black);
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: inherit;
+  font-size: 1rem;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  text-decoration-thickness: 1.5px;
+  transition:
+    text-decoration-thickness 180ms ease,
+    opacity 180ms ease;
+}
+
+.cta-link:hover {
+  text-decoration-thickness: 3px;
+  opacity: 0.78;
+}
+
+/* ============================================================
+   BOARDING PASS
+   ============================================================ */
+
+.pass {
+  position: relative;
+  display: flex;
+  width: clamp(0px, 92vw, 720px);
+  min-height: 288px;
+  border-radius: 0; /* sharp, not curved */
+  overflow: hidden;
+  text-align: left;
+  background: var(--bone);
+  color: var(--pitch-black);
+  cursor: pointer;
+  border: none;
+  padding: 0;
+  font-family: inherit;
+  box-shadow:
+    0 1px 0 rgba(253, 253, 253, 0.7) inset,
+    0 22px 50px -28px rgba(19, 20, 10, 0.55),
+    0 6px 16px -10px rgba(19, 20, 10, 0.35);
+  filter: blur(8px);
+  opacity: 0.78;
+  transform: scale(0.985);
+  transition:
+    filter 600ms ease,
+    opacity 600ms ease,
+    transform 600ms ease;
+}
+
+.pass:hover,
+.pass:focus-visible,
+.pass.is-revealed {
+  filter: blur(0);
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* left red strip */
+.pass-strip {
+  flex: 0 0 14px;
+  background: var(--brick-red);
+}
+
+/* main panel */
+.pass-main {
+  flex: 1 1 auto;
+  padding: 22px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+
+.pass-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.pass-brand {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.pass-code {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--brick-red);
+  white-space: nowrap;
+}
+
+.pass-headline {
+  font-size: clamp(20px, 4.4vw, 30px);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.05;
+  margin-top: 2px;
+}
+
+.pass-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 18px;
+  margin-top: auto;
+}
+
+.field-label {
+  display: block;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(19, 20, 10, 0.55);
+  margin-bottom: 2px;
+}
+
+.field-value {
+  display: block;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.pass-cta {
+  align-self: flex-start;
+  margin-top: 4px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--white);
+  background: var(--pitch-black);
+  border: none;
+  border-radius: 0; /* sharp */
+  padding: 10px 22px;
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(6px);
+  transition:
+    opacity 500ms ease 120ms,
+    transform 500ms ease 120ms,
+    background-color 160ms ease;
+}
+
+.pass:hover .pass-cta,
+.pass:focus-visible .pass-cta,
+.pass.is-revealed .pass-cta {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.pass-cta:hover {
+  background: var(--brick-red);
+}
+
+/* perforated tear line */
+.pass-perf {
+  flex: 0 0 0;
+  border-left: 2px dashed rgba(19, 20, 10, 0.35);
+  margin: 14px 0;
+  position: relative;
+}
+
+.pass-perf::before,
+.pass-perf::after {
+  content: "";
+  position: absolute;
+  left: -10px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--white);
+}
+
+.pass-perf::before { top: -22px; }
+.pass-perf::after { bottom: -22px; }
+
+/* right stub */
+.pass-stub {
+  flex: 0 0 150px;
+  background: var(--camel);
+  color: var(--pitch-black);
+  padding: 20px 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.stub-label {
+  display: block;
+  margin-bottom: 3px;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(19, 20, 10, 0.6);
+}
+
+.stub-value {
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+/* barcode */
+.barcode {
+  display: flex;
+  gap: 2px;
+  height: 44px;
+  align-items: stretch;
+}
+
+.barcode span {
+  display: block;
+  width: 2px;
+  background: var(--pitch-black);
+}
+
+.barcode span:nth-child(even) { width: 3px; opacity: 0.85; }
+.barcode span:nth-child(3n) { width: 1px; }
+.barcode span:nth-child(4n) { width: 4px; }
+
+/* ============================================================
+   MODAL
+   ============================================================ */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(19, 20, 10, 0.42);
+  backdrop-filter: blur(3px);
+  animation: overlayIn 200ms ease both;
+}
+
+.modal-card {
+  width: 100%;
+  max-width: 420px;
+  background: var(--white);
+  border: 1px solid rgba(19, 20, 10, 0.1);
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: 0 30px 70px -30px rgba(19, 20, 10, 0.6);
+  animation: modalIn 260ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+@keyframes overlayIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes modalIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.modal-eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--brick-red);
+}
+
+.modal-title {
+  margin-top: 8px;
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.modal-sub {
+  margin-top: 6px;
+  font-size: 14px;
+  color: rgba(19, 20, 10, 0.65);
+}
+
+.modal-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.modal-field label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(19, 20, 10, 0.7);
+}
+
+.modal-field input {
+  font-family: inherit;
+  font-size: 15px;
+  color: var(--pitch-black);
+  background: var(--white);
+  border: 1px solid rgba(19, 20, 10, 0.22);
+  border-radius: 10px;
+  padding: 11px 13px;
+  transition: border-color 160ms ease;
+}
+
+.modal-field input:focus {
+  outline: none;
+  border-color: var(--pitch-black);
+}
+
+.modal-submit {
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--white);
+  background: var(--brick-red);
+  border: none;
+  border-radius: 10px;
+  padding: 13px 16px;
+  cursor: pointer;
+  transition: opacity 160ms ease, transform 120ms ease;
+}
+
+.modal-submit:hover { opacity: 0.92; }
+.modal-submit:active { transform: translateY(1px); }
+.modal-submit:disabled { opacity: 0.6; cursor: default; }
+
+.modal-close {
+  position: absolute;
+  top: 16px;
+  right: 18px;
+  background: none;
+  border: none;
+  font-size: 22px;
+  line-height: 1;
+  color: rgba(19, 20, 10, 0.55);
+  cursor: pointer;
+  transition: color 140ms ease;
+}
+
+.modal-close:hover { color: var(--pitch-black); }
+
+.modal-error {
+  font-size: 13px;
+  color: var(--brick-red);
+}
+
+.modal-success-title {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.modal-success-sub {
+  margin-top: 8px;
+  font-size: 15px;
+  color: rgba(19, 20, 10, 0.7);
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 640px) {
+  .flap-board {
+    --tile-w: 38px;
+    --tile-h: 52px;
+    --tile-font: 30px;
+    --flap-gap: 5px;
+  }
+  .pass {
+    flex-wrap: wrap;
+    min-height: 0;
+  }
+  .pass-main {
+    flex: 1 1 100%;
+    padding: 18px 18px;
+  }
+  .pass-perf {
+    display: none;
+  }
+  .pass-stub {
+    flex: 1 1 100%;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .barcode {
+    height: 36px;
+  }
+}
+
+/* ============================================================
+   REDUCED MOTION
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .flap-board,
+  .flap-tile,
+  .fade-in,
+  .modal-overlay,
+  .modal-card {
+    animation: none !important;
+  }
+  .fade-in {
+    opacity: 1;
+  }
+  .pass {
+    filter: blur(2px);
+    opacity: 0.92;
+  }
 }
