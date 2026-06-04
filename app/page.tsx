@@ -1,13 +1,12 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
 import SplitFlapLogo from "@/components/SplitFlapLogo";
 import BoardingPass from "@/components/BoardingPass";
 import WaitlistModal from "@/components/WaitlistModal";
 
 export default function StandbyLandingPage() {
   const [modalOpen, setModalOpen] = useState(false);
-  const passRef = useRef<HTMLButtonElement>(null);
 
   return (
     <main className="flex min-h-dvh flex-col items-center justify-center gap-12 px-6 py-20 text-center">
@@ -29,7 +28,7 @@ export default function StandbyLandingPage() {
       </div>
 
       <div className="fade-in" style={{ animationDelay: "2.4s" }}>
-        <BoardingPass ref={passRef} onOpen={() => setModalOpen(true)} />
+        <BoardingPass onOpen={() => setModalOpen(true)} />
       </div>
 
       <WaitlistModal open={modalOpen} onClose={() => setModalOpen(false)} />

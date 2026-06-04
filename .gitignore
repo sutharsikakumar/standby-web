@@ -14,6 +14,9 @@
 .DS_Store
 *.pem
 
+# local design references (not needed at runtime)
+/images
+
 # debug
 npm-debug.log*
 yarn-debug.log*
